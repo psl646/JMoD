@@ -159,7 +159,6 @@
 	};
 	
 	// Deletes the innerHTML of the DOMNodeCollection instance.
-	// Invokes the innerHTML function with an argument of ""
 	DOMNodeCollection.prototype.deleteInnerHTML = function () {
 	  this.innerHTML("");
 	};
@@ -182,6 +181,7 @@
 	  }
 	};
 	
+	// Returns the outerHTML of each element in the DOMNodeCollection
 	DOMNodeCollection.prototype.outerHTML = function () {
 	  var outerHTML = "";
 	  for (var i = 0; i < this.elementsArray.length; i++) {
@@ -222,6 +222,8 @@
 	  }
 	};
 	
+	// DOMNodeCollection#children is a method that returns a DOMNodeCollection of
+	// all the children of all HTMLElements in the instance variable elementsArray
 	DOMNodeCollection.prototype.children = function () {
 	  var allChildren = [];
 	  for (var i = 0; i < this.elementsArray.length; i++) {
@@ -231,18 +233,23 @@
 	  return new DOMNodeCollection(allChildren);
 	};
 	
+	// DOMNodeCollection#parent returns a DOMNodeCollection of the parents of each
+	// of the HTMLElements
 	DOMNodeCollection.prototype.parent = function () {
 	  var allParents = [];
 	  for (var i = 0; i < this.elementsArray.length; i++) {
 	    var parentElement = this.elementsArray[i].parentElement;
+	    // Does not push the same parentElement into the allParents array
 	    if (!allParents.includes(parentElement)){
 	      allParents.push(parentElement);
 	    }
-	
 	  }
 	  return new DOMNodeCollection(allParents);
 	};
 	
+	// DOMNodeCollection#find returns a DOMNodeCollection of all the nodes matching
+	// the selector passed in as an argument that are descendants of the HTMLElements
+	// in this.elementsArray
 	DOMNodeCollection.prototype.find = function (selector) {
 	  var allFound = [];
 	  for (var i = 0; i < this.elementsArray.length; i++) {
