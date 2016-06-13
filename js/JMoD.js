@@ -58,6 +58,7 @@
 	    console.log("ARG IS STRING");
 	    nodeCollection = _createDOMNodeFromString(arg);
 	  }
+	  // What is an HTMLElement?  Why can't I access this part of the if block
 	  else if ( arg instanceof HTMLElement) {
 	    console.log("ARG IS HTML ELEMENT");
 	    elementsArray = [arg];
@@ -136,23 +137,31 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	// Takes in an array of HTMLElements and sets it to an instance variable
+	// Takes in an array of HTMLElements and sets the array to an instance variable
 	function DOMNodeCollection(elementsArray) {
 	  this.elementsArray = elementsArray;
 	}
 	
-	DOMNodeCollection.prototype.html = function (string) {
+	// Takes an optional string argument
+	DOMNodeCollection.prototype.innerHTML = function (string) {
+	  // If no string argument is given,
+	  // return the innerHTML of the first HTMLElement in the elementsArray.
 	  if (string === undefined){
 	    return this.elementsArray[0].innerHTML;
-	  } else {
+	  }
+	  // If given a string argument, set the innerHTML of each element as the
+	  // provided string input
+	  else {
 	    for (var i = 0; i < this.elementsArray.length; i++) {
 	      this.elementsArray[i].innerHTML = string;
 	    }
 	  }
 	};
 	
-	DOMNodeCollection.prototype.empty = function () {
-	  this.html("");
+	// Deletes the innerHTML of the DOMNodeCollection instance.
+	// Invokes the innerHTML function with an argument of ""
+	DOMNodeCollection.prototype.deleteInnerHTML = function () {
+	  this.innerHTML("");
 	};
 	
 	DOMNodeCollection.prototype.append = function (arg) {
