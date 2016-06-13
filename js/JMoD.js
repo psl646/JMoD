@@ -47,29 +47,52 @@
 	DOMNodeCollection = __webpack_require__(1);
 	var functions = [];
 	
+	// $l is the core function.  It receives one argument (arg).
 	$l = function (arg) {
+	  var elementsArray;
+	  var nodeCollection;
 	
+	  // If arg type is a string, it is expected to be a CSS selector
+	  // which is used to identify nodes on a page.
 	  if ( typeof arg === "string" ) {
-	    var matches = document.querySelectorAll(arg);
-	    var elementsArray = [].slice.call(matches);
-	    var nodeCollection = new DOMNodeCollection(elementsArray);
+	    console.log("ARG IS STRING");
+	    nodeCollection = _createDOMNodeFromString(arg);
 	  }
 	  else if ( arg instanceof HTMLElement) {
-	    var elementsArray = [arg];
-	    var nodeCollection = new DOMNodeCollection(elementsArray);
+	    console.log("ARG IS HTML ELEMENT");
+	    elementsArray = [arg];
+	    nodeCollection = new DOMNodeCollection(elementsArray);
 	  }
 	  else if ( arg instanceof Function ) {
+	    console.log("ARG IS FUNCTION");
+	    var functions = [];
 	    functions.push(arg);
-	    if(document.readyState === "complete") {
+	    if ( document.readyState === "complete" ) {
 	      functions.forEach( function (fn) {
 	        fn();
 	      });
-	      functions = [];
 	    }
 	    return;
 	  }
+	  // Returns an instance of DOMNodeCollection
 	  return nodeCollection;
 	}
+	
+	var _createDOMNodeFromString = function (arg) {
+	  // Matches will be a NodeList (array-like object), which is retrieved via the
+	  // native JavaScript API
+	  var matches = document.querySelectorAll(arg);
+	  // We use the slice method for arrays on the 'matches' object to create an
+	  // actual array-object of matches - with each element being an HTMLElement
+	  var elementsArray = [].slice.call(matches);
+	  // We create an instance of DOMNodeCollection using elementsArray as the input
+	  // The DOMNodeCollection will have an instance variable pointing to elementsArray
+	  return new DOMNodeCollection(elementsArray);
+	};
+	
+	
+	
+	
 	
 	$l.extend = Object.assign;
 	
@@ -113,6 +136,7 @@
 /* 1 */
 /***/ function(module, exports) {
 
+	// Takes in an array of HTMLElements and sets it to an instance variable
 	function DOMNodeCollection(elementsArray) {
 	  this.elementsArray = elementsArray;
 	}
@@ -142,7 +166,6 @@
 	      this.elementsArray[i].innerHTML += arg;
 	    }
 	  }
-	
 	  else if (arg instanceof DOMNodeCollection) {
 	    for (var i = 0; i < this.elementsArray.length; i++) {
 	      this.elementsArray[i].innerHTML += arg.outerHTML();
@@ -240,8 +263,6 @@
 	    this.elementsArray[i].removeEventListener(type, callback);
 	  }
 	};
-	
-	
 	
 	module.exports = DOMNodeCollection;
 
