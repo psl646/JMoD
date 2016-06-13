@@ -45,39 +45,44 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	DOMNodeCollection = __webpack_require__(1);
-	var functions = [];
 	
-	// $l is the core function.  It receives one argument (arg).
-	$l = function (arg) {
-	  var elementsArray;
+	// Array to store all the callback functions
+	var _callbackFnArray = [];
+	var _documentReadyStatus = false;
+	
+	// $JMoD is the core function.  It receives one argument (arg).
+	$JMoD = function (arg) {
 	  var nodeCollection;
 	
 	  // If arg type is a string, it is expected to be a CSS selector
 	  // which is used to identify nodes on a page.
 	  if ( typeof arg === "string" ) {
-	    console.log("ARG IS STRING");
 	    nodeCollection = _createDOMNodeFromString(arg);
 	  }
 	  // What is an HTMLElement?  Why can't I access this part of the if block
 	  else if ( arg instanceof HTMLElement) {
-	    console.log("ARG IS HTML ELEMENT");
-	    elementsArray = [arg];
-	    nodeCollection = new DOMNodeCollection(elementsArray);
+	    nodeCollection = new DOMNodeCollection([arg]);
 	  }
+	  // If the input arg is a function, we call the _registerCallbackFn with arg
 	  else if ( arg instanceof Function ) {
-	    console.log("ARG IS FUNCTION");
-	    var functions = [];
-	    functions.push(arg);
-	    if ( document.readyState === "complete" ) {
-	      functions.forEach( function (fn) {
-	        fn();
-	      });
-	    }
+	    _registerCallbackFn(arg);
 	    return;
 	  }
+	  
 	  // Returns an instance of DOMNodeCollection
 	  return nodeCollection;
 	}
+	
+	// If the document is loaded, we invoke the arg function.
+	// If the document is NOT loaded, we place is in the _callbackFnArray queue
+	// to invoke later when the document is loaded
+	var _registerCallbackFn = function (arg) {
+	  if ( _documentReadyStatus ) {
+	    arg();
+	  } else {
+	    _callbackFnArray.push(arg);
+	  }
+	};
 	
 	var _createDOMNodeFromString = function (arg) {
 	  // Matches will be a NodeList (array-like object), which is retrieved via the
@@ -91,46 +96,43 @@
 	  return new DOMNodeCollection(elementsArray);
 	};
 	
+	 // A function to merge JavaScript objects.
+	 // The arguments will be two or more objects.
+	$JMoD.extend = Object.assign;
 	
-	
-	
-	
-	$l.extend = Object.assign;
-	
-	
-	$l.ajax = function(options){
+	$JMoD.ajax = function(options){
+	  // Sets the defaults which will be used to merge with the options argument
 	  var defaults = {
-	    success: function() {},
-	    error: function() {},
 	    url: '',
 	    type: 'GET',
+	    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 	    data: {},
-	    contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+	    success: function () {},
+	    error: function () {}
 	  };
 	
-	  this.extend(defaults, options);
+	  var request = this.extend(defaults, options);
+	
 	  var xhr = new XMLHttpRequest();
-	  xhr.open(defaults.type, defaults.url);
+	  xhr.open(request.type, request.url);
 	
 	  xhr.onload = function () {
 	    if(xhr.status === 200) {
-	      defaults.success(JSON.parse(xhr.response));
+	      request.success(JSON.parse(xhr.response));
 	    } else {
-	      defaults.error(JSON.parse(xhr.response));
+	      request.error(JSON.parse(xhr.response));
 	    }
 	  };
 	
-	  xhr.send(defaults.data);
+	  xhr.send(JSON.stringify(request.data));
 	};
 	
-	document.onreadystatechange = function () {
-	  if( document.readyState === "complete" ) {
-	    functions.forEach( function (fn) {
-	      fn();
-	    });
-	    functions = [];
-	  }
-	}
+	document.addEventListener('DOMContentLoaded', function (){
+	  _documentReadyStatus = true;
+	  _callbackFnArray.forEach( function (callbackFn) {
+	    callbackFn();
+	  });
+	});
 
 
 /***/ },
@@ -199,6 +201,7 @@
 	  }
 	};
 	
+	// Will add className argument to the class attribute
 	DOMNodeCollection.prototype.addClass = function (className) {
 	  for (var i = 0; i < this.elementsArray.length; i++) {
 	    var oldClasses = this.elementsArray[i].getAttribute('class');
@@ -211,6 +214,7 @@
 	  }
 	};
 	
+	// Will remove className argument from the class attribute
 	DOMNodeCollection.prototype.removeClass = function (className) {
 	  for (var i = 0; i < this.elementsArray.length; i++) {
 	    var oldClasses = this.elementsArray[i].getAttribute('class');
@@ -249,7 +253,7 @@
 	
 	// DOMNodeCollection#find returns a DOMNodeCollection of all the nodes matching
 	// the selector passed in as an argument that are descendants of the HTMLElements
-	// in this.elementsArray
+	// in the instance variable elementsArray
 	DOMNodeCollection.prototype.find = function (selector) {
 	  var allFound = [];
 	  for (var i = 0; i < this.elementsArray.length; i++) {
@@ -261,6 +265,7 @@
 	  return new DOMNodeCollection(allFound);
 	};
 	
+	// Removes the DOMNodeCollection from the DOM by setting the outerHTML to ""
 	DOMNodeCollection.prototype.remove = function () {
 	  for (var i = 0; i < this.elementsArray.length; i++) {
 	    this.elementsArray[i].outerHTML = "";
@@ -268,12 +273,16 @@
 	  this.elementsArray = [];
 	};
 	
+	// Adds an event listener of 'type' with a callback on each HTMLElement in the
+	// instance variable
 	DOMNodeCollection.prototype.on = function (type, callback) {
 	  for (var i = 0; i < this.elementsArray.length; i++) {
 	    this.elementsArray[i].addEventListener(type, callback);
 	  }
 	};
 	
+	// Removes the event listener of 'type' with a callback on each HTMLElement in the
+	// instance variable
 	DOMNodeCollection.prototype.off = function (type, callback) {
 	  for (var i = 0; i < this.elementsArray.length; i++) {
 	    this.elementsArray[i].removeEventListener(type, callback);
