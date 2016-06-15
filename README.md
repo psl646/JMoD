@@ -52,15 +52,15 @@ DOMNodeCollection
 Currently, the DOMNodeCollection has the following methods available for DOM manipulation:
 
 ###DOM Manipulation
-`innerHTML(string)` - Set the DOM element to the input string value.
+`innerHTML(string)` - Set the DOM element to the input `string` value.
 
 `deleteInnerHTML()` - Uses the innerHTML method; sets DOM elements to empty strings.
 
 `outerHTML()` - Returns the outerHTML of each DOM element
 
-`append(arg)` - Adds `arg` to DOM elements as children.
+`append(arg)` - Adds input `arg` to DOM elements as children.
 
-`attr(attribute, value)` - Sets attribute equal to `value` for DOM elements.
+`attr(attribute, value)` - Sets `attribute` equal to `value` for DOM elements.
 
 `addClass(className)` - Add the class `className` to DOM elements.
 
