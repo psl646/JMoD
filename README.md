@@ -51,7 +51,36 @@ DOMNodeCollection
 ----------------------
 Currently, the DOMNodeCollection has the following methods available for DOM manipulation:
 
-innerHTML, deleteInnerHTML, outerHTML, append, attr, addClass, removeClass, children, parent, find, remove, on, and off.
+###DOM Manipulation
+`innerHTML(string)` - Set the DOM element to the input string value.
+
+`deleteInnerHTML()` - Uses the innerHTML method; sets DOM elements to empty strings.
+
+`outerHTML()` - Returns the outerHTML of each DOM element
+
+`append(arg)` - Adds `arg` to DOM elements as children.
+
+`attr(attribute, value)` - Sets attribute equal to `value` for DOM elements.
+
+`addClass(className)` - Add the class `className` to DOM elements.
+
+`removeClass(className)` - Removes the class `className` from DOM elements.
+
+`remove()` - Remove DOM elements from the DOM.
+
+
+###DOM Retrieval
+`children()` - Gets children of DOM elements, returns a new instance of `DOMNodeCollection`.
+
+`parent()` - Gets parent of DOM elements, returns a new instance of `DOMNodeCollection`.
+
+`find(selector)` - Find DOM elements by the `selector`, returns a new instance of `DOMNodeCollection`.
+
+###DOM Event Handling
+
+`on(type, callback)` - Adds a `callback` to DOM elements for a particular event `type`.
+
+`off(type, callback)` - Removes `callback` from DOM elements for a particular event `type`.
 
 Future Improvements
 -----------------------
