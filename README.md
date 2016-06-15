@@ -16,6 +16,36 @@ As stated above; JMoD's core function is $JMod(arg).  JMoD is also capable of se
 
 $JMoD.ajax works by using the XMLHttpRequest API to send and receive data from the server.
 
+```javascript
+
+$JMoD.ajax = function(options){
+  // Sets the defaults which will be used to merge with the options argument
+  var defaults = {
+    url: '',
+    type: 'GET',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    data: {},
+    success: function () {},
+    error: function () {}
+  };
+
+  var request = this.extend(defaults, options);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open(request.type, request.url);
+
+  xhr.onload = function () {
+    if(xhr.status === 200) {
+      request.success(JSON.parse(xhr.response));
+    } else {
+      request.error(JSON.parse(xhr.response));
+    }
+  };
+
+  xhr.send(JSON.stringify(request.data));
+};
+
+```
 
 DOMNodeCollection
 ----------------------
